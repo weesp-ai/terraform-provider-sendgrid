@@ -1,0 +1,52 @@
+name: Release
+
+# Pushing a tag like v0.2.0 builds, signs, and publishes a GitHub Release.
+# The Terraform Registry ingests that release via webhook and serves the new
+# provider version.
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Creating a GitHub Release and uploading assets counts as writing contents.
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  goreleaser:
+    name: Build & Publish
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          # GoReleaser needs full history and tags for the build.
+          fetch-depth: 0
+          # GoReleaser publishes via the GitHub API (GITHUB_TOKEN), not git
+          # push, so we don't persist git credentials.
+          persist-credentials: false
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        id: import_gpg
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          version: '~> v2'
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
