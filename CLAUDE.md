@@ -29,6 +29,10 @@ Link it from **a paragraph of its own, last in the `## Summary` section** — a 
 
 Opening a PR with **no** ticket at all needs the developer's explicit permission, asked for and given in that conversation; permission for one PR never carries to the next. Once given, add the `skip-linear` label so the waiver is recorded on the PR itself.
 
+### Linking tickets in chat
+
+In chat replies, render every Linear ticket identifier as a markdown link — `DEV-123` becomes `[DEV-123](https://linear.app/weesp-ai/issue/DEV-123)`. Chat only: in commit messages, PR titles and descriptions, branch names, and docs, keep the bare identifier (`Fixes DEV-362`) — that is the form Linear's status automation and the `linear/linked` check read.
+
 ## When stuck, read
 
 | If you need…                                       | Read                                                        |
