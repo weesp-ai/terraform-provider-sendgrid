@@ -1,0 +1,85 @@
+name: Linear Link
+run-name: "${{ github.event_name == 'pull_request' && format('Linear link check for PR #{0}', github.event.number) || 'Linear link sweep' }}"
+
+# Gates merging on the PR being linked to a Linear issue, by posting the
+# `linear/linked` commit status. Make that context a required check in the
+# repository's ruleset — the job itself is deliberately not the gate, so that a
+# transient GitHub or Linear outage shows up as a red job rather than as a
+# verdict about the author's PR.
+#
+# Every other weesp-ai repository calls the shared implementation in
+# weesp-ai/.github-private instead of carrying this file and its script. GitHub
+# does not let a public repository use an action or reusable workflow from a
+# private or internal one, and this repository is public, so it keeps its own
+# copy. Changes to the shared gate need mirroring here.
+#
+# The `pull_request` types are the four ways a link appears or disappears from
+# the GitHub side (description or title edit, branch push, the waiver label),
+# plus `opened`/`reopened`. The schedule covers the one path that fires no
+# GitHub event at all: attaching or detaching the PR from inside Linear.
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+      - ready_for_review
+      - labeled
+      - unlabeled
+  schedule:
+    # Twice an hour, off the hour to stay out of the top-of-hour queue.
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number to re-check (blank sweeps every open PR)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+  statuses: write
+
+defaults:
+  run:
+    # noinspection SpellCheckingInspection
+    shell: bash -euo pipefail {0}
+
+concurrency:
+  group: linear-link-${{ github.event.pull_request.number || 'sweep' }}
+  cancel-in-progress: true
+
+jobs:
+
+  link:
+    name: Verify Linear link
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout
+        # The default merge-ref checkout means a PR runs the check script as the
+        # PR would leave it, so the PR that changes the script is also the PR
+        # that proves it still works. Weakening the gate is possible but lands
+        # in the diff, where review catches it.
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/scripts
+
+      - name: Post the linear/linked status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional. Without it the check still covers every GitHub-side link
+          # (title, description, branch name) by text match; with it, links made
+          # from inside Linear count too and referenced tickets are confirmed to
+          # exist. Set it once as an organization secret.
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          LINEAR_TEAM_KEYS: ${{ vars.LINEAR_TEAM_KEYS }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        # The PR title and description are attacker-controlled text and are
+        # never interpolated into this shell — the script reads them from the
+        # API instead.
+        run: node .github/scripts/linear-link-check.mjs
