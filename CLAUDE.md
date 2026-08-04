@@ -17,17 +17,28 @@ Act as a friendly, professional teammate. Concise, opinionated when warranted, h
 
 ## Issue tracking
 
-Work is tracked in **Linear** (workspace `weesp-ai`, team **Engineering**, identifiers `DEV-<n>`). The `weesp-ai/product` GitHub issue tracker is being migrated to Linear and then retired — **don't file new issues there**.
+**This repository is public, and it tracks work in its own GitHub Issues.** That is the exception to the org's Linear-only rule, and the reason is the readers: consumers of the provider can open an issue here, follow it, and see why a release changed — none of which they can do with an internal Linear ticket. Work is *also* tracked internally in **Linear** (workspace `weesp-ai`, team **Engineering**, identifiers `DEV-<n>`), and the Linear ticket links out to the GitHub Issue and the PR so the internal board stays complete.
 
-### Every PR needs a Linear ticket
+So, for a change here:
 
-**Don't open a PR that isn't linked to a Linear ticket.** The `linear/linked` status check is required on `main` and holds the merge until it is.
+1. **A GitHub Issue in this repository** states the case for the change, in public. It is the artifact an outside reader can find.
+2. **The PR references that issue** — `Fixes #12` (or `Contributes to #12` when the issue takes more than one PR) as a paragraph of its own, last in `## Summary`.
+3. **The Linear ticket cross-links both**, and carries whatever internal context doesn't belong in public.
 
-Link it from **a paragraph of its own, last in the `## Summary` section** — a standalone line after the summary paragraph, never a sentence tacked onto the end of it. When this is the only PR resolving the ticket, write `Fixes DEV-362` — `Fixes` (or `Closes` / `Resolves`) is what moves the ticket to Done when the PR merges. When the ticket is expected to take more than one PR, write `Contributes to DEV-362` instead: it links the PR without touching the ticket's status on merge, leaving the ticket to be closed by hand or by the PR that finishes it. A bare `DEV-<n>` or Linear URL in the title, description or branch name satisfies the check too, but drives no status transition. Attaching the PR from inside Linear also counts: the check reads Linear's own attachments, not just the PR text.
+The `linear/linked` status check is still required on `main`. Attaching the PR to its Linear ticket from inside Linear satisfies it — the check reads Linear's own attachments, not just the PR text — as does a bare `DEV-<n>` in the branch name. Neither obliges the public PR body to carry an identifier its readers cannot resolve.
 
-**No ticket for the work you're about to push?** Stop and ask before opening the PR — offer to file one and say what you'd put in it. Never invent a ticket silently. A ticket you file sets three things at creation: the **assignee** is the developer driving the session, never the bot; an initial **priority** derived from severity (how bad the impact is) and urgency (how soon it has to be dealt with) — `Urgent` for something actively breaking production or exploitable now, `High` for a real defect or exposure that should land this cycle, `Medium` for ordinary planned work, `Low` for cleanup and retroactive write-ups; and an **estimate** on the team's t-shirt scale (`XS`–`XL`). Say which priority and estimate you picked and why when you offer the ticket — they are a starting point for the developer to correct, not a call to make silently.
+**No issue for the work you're about to push?** Stop and ask before opening the PR — offer to file one and say what you'd put in it. Never invent one silently. When you file the Linear side too, it sets three things at creation: the **assignee** is the developer driving the session, never the bot; an initial **priority** derived from severity (how bad the impact is) and urgency (how soon it has to be dealt with) — `Urgent` for something actively breaking production or exploitable now, `High` for a real defect or exposure that should land this cycle, `Medium` for ordinary planned work, `Low` for cleanup and retroactive write-ups; and an **estimate** on the team's t-shirt scale (`XS`–`XL`). Say which priority and estimate you picked and why when you offer the ticket — they are a starting point for the developer to correct, not a call to make silently.
 
-Opening a PR with **no** ticket at all needs the developer's explicit permission, asked for and given in that conversation; permission for one PR never carries to the next. Once given, add the `skip-linear` label so the waiver is recorded on the PR itself.
+Opening a PR with **no** tracking at all needs the developer's explicit permission, asked for and given in that conversation; permission for one PR never carries to the next. Once given, add the `skip-linear` label so the waiver is recorded on the PR itself.
+
+### What the issue says, and what the PR says
+
+An issue makes the **case for a change**; a PR gives the **account of the change**. Say each thing once, in the artifact that owns it — the shared `CONTRIBUTING.md` §The ticket and the PR each have one job carries the full rules.
+
+- **An issue title states a state; a PR title states a transition.** "A validated domain re-plans as tainted on every apply" is the issue; "Domain validation stops proposing a replacement for an already-valid domain" is its PR.
+- **An issue may carry the diagnosis; it must not carry the design.** Naming the attribute that drifts is diagnosis. "Mark the attribute `Computed` and add a state upgrader" is design, and belongs in the PR that does it.
+- **The PR doesn't re-argue the motivation** — but because this repository is public and its issues are the only tracker outside readers can follow, a PR here keeps enough of the case for the change to stand on its own. That is the one place this repo departs from the org-wide split.
+- **When the implementation contradicts the issue, say so in the PR** and amend the issue. Never diverge quietly.
 
 ### Linking tickets in chat
 
@@ -111,7 +122,9 @@ When uncertain whether an action is reversible or has side-effects, ask first.
 - Don't hand-edit `docs/` — it is generated by `make docs`.
 - Don't grow this into a general-purpose SendGrid provider by reflex; new resources are a scoping decision, not a refactor.
 - Don't `add_repo` a repo just to read its documentation — read the rendered page from the internal docs hub instead. See §When stuck, read.
-- Don't open a PR that isn't linked to a Linear ticket, and don't apply `skip-linear` without the developer's explicit say-so. See §Issue tracking.
+- Don't open a PR that isn't linked to a GitHub Issue in this repository and tracked in Linear, and don't apply `skip-linear` without the developer's explicit say-so. See §Issue tracking.
+- Don't write the fix into the issue or the issue's argument into the PR, and don't title an issue as though the fix already landed. See §What the issue says, and what the PR says.
+- Don't put internal-only context in a public issue or PR — hostnames, service accounts, customer names, internal ticket detail. That belongs in the Linear ticket.
 - Don't prefix PR titles with `type(scope):` — that format is commit-subject-only.
 - Don't open PRs as draft.
 - Don't add documentation or comments to code you didn't change.
@@ -122,7 +135,7 @@ When uncertain whether an action is reversible or has side-effects, ask first.
 - After any Go change, run `make fmt`, `make vet` and `make test`; run `make tidy` if imports changed.
 - Regenerate and commit `docs/` whenever a resource schema changes.
 - Match the surrounding file's comment wrap width when writing a new comment, not a narrower default like 72.
-- Write succinct PR titles that describe the change, without a `type`/`scope` prefix.
-- Structure every PR description with exactly two H2 sections: `## Summary` and `## Technical details`. Keep both compact; put long-form material in a Markdown file in this repository and link it by path rather than inlining it. Don't link a PR description here at the internal docs hub — this repository is public, and outside readers would hit an auth wall.
+- Write succinct PR titles that name **the change this branch makes** — the transition, where the issue title states the state — without a `type`/`scope` prefix. For one slice of a multi-PR issue, name the slice.
+- Structure every PR description as `## Summary` (what this branch changes, enough of the case for the change that a public reader can follow it, then the `Fixes #<n>` reference as its own paragraph) and `## Technical details` (the how, and above all **why this way** — the obvious alternative you rejected and what defeats it), plus an optional `## Validation` when you have evidence you actually ran. Keep them compact; put long-form material in a Markdown file in this repository and link it by path rather than inlining it. Don't link a PR description here at the internal docs hub — this repository is public, and outside readers would hit an auth wall.
 - Keep the PR title and description in sync with what's on the branch — re-read the cumulative diff after pushing new commits and update them if scope drifted.
 - Files end with a trailing newline.
