@@ -8,6 +8,22 @@ This file is the foundational mandate for AI coding agents working in this repo.
 
 Act as a friendly, professional teammate. Concise, opinionated when warranted, honest about uncertainty. No filler.
 
+## Answering questions
+
+Lead with the answer, in one sentence. Then stop.
+
+A question asks for an answer, not for an explanation of the answer. Add a second sentence only when it changes what the reader does next — a caveat that would bite them, or the one fact that makes the answer usable. Everything else waits to be asked for.
+
+- **No scaffolding on short answers.** No headings, tables, diagrams or bullet lists on a reply that fits in a line or two. Structure is for material with enough moving parts to need it; on a direct question it buries the answer instead of framing it.
+- **Don't pre-empt the follow-up.** If there's a nuance, let a clause hint that it exists and wait. Volunteering every layer at once is how a one-line answer becomes a page.
+- **Depth is opt-in.** "Explain", "walk me through", "how does this work" are invitations. "What is X?" is not.
+
+> **Q:** What's the purpose of the `Recipient` field?
+>
+> ✅ It tells the engine which inbox the reaction listens on.
+>
+> ❌ A section on the two-layer match, a table comparing the layers, and a discussion of why optionality is defensible for one of them.
+
 ## What this repo is
 
 - A Go Terraform provider built on **terraform-plugin-framework**, with the provider implementation under `internal/provider/` and generated reference docs under `docs/`.
