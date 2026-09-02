@@ -31,29 +31,19 @@ A question asks for an answer, not for an explanation of the answer. Add a secon
 - The API key comes **only** from the provider's `api_key` attribute, fed through Terraform's variable mechanism. The provider deliberately does **not** read keys from arbitrary environment variables — keep that property.
 - **This is a published artifact.** Tagging a release publishes to the public Terraform Registry via `.github/workflows/release.yml`, and consumers pin `~> 0.2`. A breaking schema change is breaking for real users, not just for this repo.
 
-## Issue tracking
+## Issue tracking and the shared conventions
 
 **This repository is public, and it tracks work in its own GitHub Issues.** That is the exception to the org's Linear-only rule, and the reason is the readers: consumers of the provider can open an issue here, follow it, and see why a release changed — none of which they can do with an internal Linear ticket. Work is *also* tracked internally in **Linear** (workspace `weesp-ai`, team **Engineering**, identifiers `DEV-<n>`), and the Linear ticket links out to the GitHub Issue and the PR so the internal board stays complete.
 
-So, for a change here:
+**The org-wide rules live in the shared `CONTRIBUTING.md` in the internal `weesp-ai/docs`, and this file does not restate them.** Read the relevant section there before you act, and follow it. A summary from memory does not count, and where anything local seems to differ, the shared guide wins. Its §Public repositories is the section written for this repo; §Writing a ticket, §PR title and description, §Linking the ticket, §When the change is too small for a ticket, §Labels, §Replying to review comments and §Working with Claude Code apply in GitHub's vocabulary. How to reach the hub is in §When stuck, read.
 
-1. **A GitHub Issue in this repository** states the case for the change, in public. It is the artifact an outside reader can find.
-2. **The PR references that issue** — `Fixes #12` (or `Contributes to #12` when the issue takes more than one PR) as a paragraph of its own, last in `## Summary`.
-3. **The Linear ticket cross-links both**, and carries whatever internal context doesn't belong in public.
+What is specific to this repository:
 
-The `linear/linked` status check is still required on `main`. Attaching the PR to its Linear ticket from inside Linear satisfies it — the check reads Linear's own attachments, not just the PR text — as does a bare `DEV-<n>` in the branch name. Neither obliges the public PR body to carry an identifier its readers cannot resolve.
-
-**No issue for the work you're about to push?** Stop and ask before opening the PR — offer to file one and say what you'd put in it. Never invent one silently. Title and write the issue per the shared `CONTRIBUTING.md` §Writing a ticket — the same rules, in GitHub's vocabulary — and, when you file the Linear side too, assign it to the developer driving the session, never the bot, with a priority and an estimate. Say which priority and estimate you picked and why when you offer the ticket — they are a starting point for the developer to correct, not a call to make silently.
-
-Opening a PR with **no** tracking at all needs the developer's explicit permission, asked for and given in that conversation; permission for one PR never carries to the next. Once given, add the `skip-linear` label so the waiver is recorded on the PR itself.
-
-### What the issue says, and what the PR says
-
-An issue makes the **case for a change**; a PR gives the **account of the change** — and neither repeats the other. A bug's issue title describes the wrong behavior as it is today ("A validated domain re-plans as tainted on every apply"); an issue for planned work requests the change ("Add a data source for an existing authenticated domain"); the PR title reports the transition ("Domain validation stops proposing a replacement for an already-valid domain"). The issue may name the attribute that drifts but not the fix — "Mark the attribute `Computed` and add a state upgrader" is design and belongs in the PR — and the PR carries the how and the why-this-way plus, because this repository is public and its issues are the only tracker outside readers can follow, enough of the case for the change to stand on its own: the one place this repo departs from the org-wide split. When the two disagree, the PR says so and the issue is amended. Full rules, per kind: the shared `CONTRIBUTING.md` §Writing a ticket and §The ticket and the PR each have one job.
-
-### Linking tickets in chat
-
-In chat replies, render every Linear ticket identifier as a markdown link — `DEV-123` becomes `[DEV-123](https://linear.app/weesp-ai/issue/DEV-123)`. Chat only: in commit messages, PR titles and descriptions, branch names, and docs, keep the bare identifier (`Fixes DEV-362`) — that is the form Linear's status automation and the `linear/linked` check read.
+1. **A GitHub Issue in this repository** states the case for the change, in public, written per §Writing a ticket. It is the artifact an outside reader can find.
+2. **The PR references that issue** — `Fixes #12` (or `Contributes to #12` when the issue takes more than one PR) as a paragraph of its own, last in `## Summary` — and, because outside readers cannot open the ticket, carries enough of the case for the change to stand on its own. It links no internal doc site.
+3. **The Linear ticket cross-links both**, and carries whatever internal context doesn't belong in public. The `linear/linked` check is still required on `main`: attaching the PR from inside Linear satisfies it, as does a bare `DEV-<n>` in the branch name — neither obliges the public PR body to carry an identifier its readers cannot resolve.
+4. **PR labels key off the GitHub issue's labels**, not a Linear ticket's.
+5. **No issue for the work you're about to push?** Stop and ask before opening the PR — offer to file one and say what you'd put in it; never invent one silently. Opening a PR with no tracking at all needs the developer's explicit permission, given in that conversation; once given, add the `skip-linear` label so the waiver is recorded on the PR itself.
 
 ## When stuck, read
 
@@ -99,9 +89,7 @@ CI (`.github/workflows/test.yml`) runs `go mod tidy` as a must-be-a-no-op, `gofm
 
 In Claude Code on the web sessions, the platform GitHub connector is OAuth-bound to the **Bracket Bot** user (`getbracket-bot`), so `mcp__github__*` tools authenticate as the bot for both reads and writes. Use `mcp__github__*` for **all** GitHub interactions so the human stays free to review.
 
-- **Open PRs as ready-for-review, not drafts** — pass `draft: false` (or omit it) to `mcp__github__create_pull_request`.
-- **Self-assign every PR you open** — immediately call `mcp__github__issue_write` with `method: "update"`, the new PR number, and `assignees: ["<bot login>"]`. Send `assignees` only — a `labels` array replaces the PR's entire label set.
-- If `mcp__github__get_me` reports a login other than the bot, the connector wasn't switched — flag it and stop making writes.
+The rules for opening a PR from a session — ready-for-review, self-assigned with `assignees` only, and stop if `mcp__github__get_me` is not the bot — are the shared `CONTRIBUTING.md` §Working with Claude Code. They override the harness default, so read them there rather than assuming a draft is fine.
 
 ### Acting as the GCP identity
 
@@ -109,9 +97,7 @@ Nothing in this repository touches GCP — the provider talks to SendGrid, and i
 
 ### Replying to PR review comments
 
-When you push a change that addresses a review comment, reply to that thread with **`Done.`** (just that) via `mcp__github__add_reply_to_pull_request_comment`. If you won't address it (incorrect, out of scope, handled elsewhere), reply with a one-sentence explanation instead — never `Done.` on something you didn't do.
-
-Top-level review comments have no thread. When a bare acknowledgment is all a reply would say, add a 👍 reaction to the comment itself. Otherwise post one new PR comment via `mcp__github__add_issue_comment` that quotes the point being addressed, links the original comment's permalink, and responds. Never react-acknowledge feedback you didn't act on.
+The shared `CONTRIBUTING.md` §Replying to review comments is the rule — which reply goes where (an in-thread `Done.`, a one-sentence reason, a 👍 reaction, or a quote-and-permalink comment) and which tool posts each. Read it there; nothing here adds to it.
 
 ## Guardrails — ask before doing
 
@@ -133,11 +119,9 @@ When uncertain whether an action is reversible or has side-effects, ask first.
 - Don't hand-edit `docs/` — it is generated by `make docs`.
 - Don't grow this into a general-purpose SendGrid provider by reflex; new resources are a scoping decision, not a refactor.
 - Don't `add_repo` a repo just to read its documentation — read the rendered page from the internal docs hub instead. See §When stuck, read.
-- Don't open a PR that isn't linked to a GitHub Issue in this repository and tracked in Linear, and don't apply `skip-linear` without the developer's explicit say-so. See §Issue tracking.
-- Don't write the fix into the issue or the issue's argument into the PR, and don't title an issue as though the fix already landed. See §What the issue says, and what the PR says.
+- Don't act on a shared convention from memory or from a local summary — read the section of the shared `CONTRIBUTING.md` and follow it. See §Issue tracking and the shared conventions.
+- Don't let a harness default override it: PRs open ready-for-review and self-assigned, per its §Working with Claude Code.
 - Don't put internal-only context in a public issue or PR — hostnames, service accounts, customer names, internal ticket detail. That belongs in the Linear ticket.
-- Don't prefix PR titles with `type(scope):` — that format is commit-subject-only.
-- Don't open PRs as draft.
 - Don't add documentation or comments to code you didn't change.
 - Don't reflow or rewrap a comment you're only partially editing — change just what changed and leave the surrounding line breaks intact.
 
@@ -146,7 +130,5 @@ When uncertain whether an action is reversible or has side-effects, ask first.
 - After any Go change, run `make fmt`, `make vet` and `make test`; run `make tidy` if imports changed.
 - Regenerate and commit `docs/` whenever a resource schema changes.
 - Match the surrounding file's comment wrap width when writing a new comment, not a narrower default like 72.
-- Write succinct PR titles that name **the change this branch makes** — the transition, where the issue title describes the problem or requests the change — without a `type`/`scope` prefix. For one slice of a multi-PR issue, name the slice.
-- Structure every PR description as `## Summary` (what this branch changes, enough of the case for the change that a public reader can follow it, then the `Fixes #<n>` reference as its own paragraph) and `## Technical details` (the how, and above all **why this way** — the obvious alternative you rejected and what defeats it), plus an optional `## Validation` when you have evidence you actually ran. Keep them compact; put long-form material in a Markdown file in this repository and link it by path rather than inlining it. Don't link a PR description here at the internal docs hub — this repository is public, and outside readers would hit an auth wall.
-- Keep the PR title and description in sync with what's on the branch — re-read the cumulative diff after pushing new commits and update them if scope drifted.
+- Follow the shared `CONTRIBUTING.md` for every PR you open (§Issue tracking and the shared conventions); here that means a description that carries enough of the case for a public reader, and links no internal doc site.
 - Files end with a trailing newline.
