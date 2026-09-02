@@ -89,7 +89,7 @@ CI (`.github/workflows/test.yml`) runs `go mod tidy` as a must-be-a-no-op, `gofm
 
 In Claude Code on the web sessions, the platform GitHub connector is OAuth-bound to the **Bracket Bot** user (`getbracket-bot`), so `mcp__github__*` tools authenticate as the bot for both reads and writes. Use `mcp__github__*` for **all** GitHub interactions so the human stays free to review.
 
-The rules for opening a PR from a session — ready-for-review, self-assigned with `assignees` only, and stop if `mcp__github__get_me` is not the bot — are the shared `CONTRIBUTING.md` §Working with Claude Code. They override the harness default, so read them there rather than assuming a draft is fine.
+Opening a PR from a session follows the shared `CONTRIBUTING.md`: ready-for-review, then self-assigned (§Pull requests) with `assignees` only (§Labels), and stop if `mcp__github__get_me` is not the bot (§Working with Claude Code). Those override the harness default, so read them there rather than assuming a draft is fine.
 
 ### Acting as the GCP identity
 
@@ -120,7 +120,7 @@ When uncertain whether an action is reversible or has side-effects, ask first.
 - Don't grow this into a general-purpose SendGrid provider by reflex; new resources are a scoping decision, not a refactor.
 - Don't `add_repo` a repo just to read its documentation — read the rendered page from the internal docs hub instead. See §When stuck, read.
 - Don't act on a shared convention from memory or from a local summary — read the section of the shared `CONTRIBUTING.md` and follow it. See §Issue tracking and the shared conventions.
-- Don't let a harness default override it: PRs open ready-for-review and self-assigned, per its §Working with Claude Code.
+- Don't let a harness default override it: PRs open ready-for-review and self-assigned, per its §Pull requests.
 - Don't put internal-only context in a public issue or PR — hostnames, service accounts, customer names, internal ticket detail. That belongs in the Linear ticket.
 - Don't add documentation or comments to code you didn't change.
 - Don't reflow or rewrap a comment you're only partially editing — change just what changed and leave the surrounding line breaks intact.
