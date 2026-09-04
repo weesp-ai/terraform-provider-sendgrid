@@ -100,13 +100,15 @@ CI (`.github/workflows/test.yml`) runs `go mod tidy` as a must-be-a-no-op, `gofm
 - **Files** → end with a newline.
 - **Commits** → the format and canonical type list are in the shared `CONTRIBUTING.md` §Commits.
 
-## Acting as the bot identity
+## Acting as your GitHub identity
 
-In Claude Code on the web sessions, the platform GitHub connector is OAuth-bound to the **Bracket Bot** user (`getbracket-bot`), so `mcp__github__*` tools authenticate as the bot for both reads and writes. Use `mcp__github__*` for **all** GitHub interactions so the human stays free to review.
+In Claude Code on the web sessions, the platform GitHub connector is bound to **your own** GitHub user, so `mcp__github__*` tools read and write as you. This repository is public, so that matters more here than elsewhere: a pull request a session opens, and every comment it leaves, carries your name in front of anyone on the internet. Read what it is about to write before it writes it. Use `mcp__github__*` for **all** GitHub interactions.
 
 - **Open PRs as ready-for-review, not drafts** — pass `draft: false` (or omit it) to `mcp__github__create_pull_request`.
-- **Self-assign every PR you open** — immediately call `mcp__github__issue_write` with `method: "update"`, the new PR number, and `assignees: ["<bot login>"]`. Send `assignees` only — a `labels` array replaces the PR's entire label set.
-- If `mcp__github__get_me` reports a login other than the bot, the connector wasn't switched — flag it and stop making writes.
+- **Self-assign every PR you open** — immediately call `mcp__github__issue_write` with `method: "update"`, the new PR number, and `assignees: ["<your login from mcp__github__get_me>"]`. Send `assignees` only — a `labels` array replaces the PR's entire label set.
+- If `mcp__github__get_me` reports `getbracket-bot`, the connector is still on the old binding and the session is about to write under the bot's name — flag it and stop making writes.
+
+`getbracket-bot` is what you **ask**, not what you act as: adding it to a pull request's reviewers gets you an automated review a few minutes later.
 
 ### Acting as the GCP identity
 
