@@ -87,7 +87,15 @@ CI (`.github/workflows/test.yml`) runs `go mod tidy` as a must-be-a-no-op, `gofm
 
 ## Acting as your GitHub identity
 
-In Claude Code on the web sessions, the platform GitHub connector is bound to **your own** GitHub user, so `mcp__github__*` tools read and write as you. This repository is public, so that matters more here than elsewhere: a pull request a session opens, and every comment it leaves, carries your name in front of anyone on the internet. Read what it is about to write before it writes it. Use `mcp__github__*` for **all** GitHub interactions.
+In Claude Code on the web sessions, the platform GitHub connector is bound to **your own** GitHub user, so `mcp__github__*` tools read and write as you. This repository is public, so that matters more here than elsewhere: a pull request a session opens, and every comment it leaves, carries your name in front of anyone on the internet. Read what it is about to write before it writes it. Use `mcp__github__*` for every GitHub interaction **except committing and pushing**.
+
+**Commits go through `git`, never through MCP.** `git commit` and `git push` are the only way a session produces a **Verified** commit: the session setup gives git your own name, your own email and your own GPG key. The `mcp__github__*` file-writing tools — `push_files`, `create_or_update_file`, `delete_file` — commit as you but leave the commit **unsigned**, so it lands **Unverified**. They are the fallback for when the signing setup did not come up (no key provisioned for your login, the secret unreadable, `gpg` unable to sign), and nothing more. One command says which:
+
+```bash
+git config --global --get gpg.format   # openpgp -> your key is armed; ssh -> it is not
+```
+
+**If you fall back to MCP, say so in chat and warn that the commits will show as Unverified** — a silent fallback is how an unsigned commit reaches `main` without anyone deciding it should. See the shared `CONTRIBUTING.md` §Working with Claude Code and §GPG commit signing.
 
 **`getbracket-bot` is what you ask, not what you act as.** Adding it to a pull request's reviewers starts the automated reviewer, which posts a review from that account a few minutes later. It holds a credential of its own for that, separate from your connector.
 
