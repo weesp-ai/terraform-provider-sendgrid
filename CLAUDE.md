@@ -85,11 +85,13 @@ CI (`.github/workflows/test.yml`) runs `go mod tidy` as a must-be-a-no-op, `gofm
 - **Files** → end with a newline.
 - **Commits** → the format and canonical type list are in the shared `CONTRIBUTING.md` §Commits.
 
-## Acting as the bot identity
+## Acting as your GitHub identity
 
-In Claude Code on the web sessions, the platform GitHub connector is OAuth-bound to the **Bracket Bot** user (`getbracket-bot`), so `mcp__github__*` tools authenticate as the bot for both reads and writes. Use `mcp__github__*` for **all** GitHub interactions so the human stays free to review.
+In Claude Code on the web sessions, the platform GitHub connector is bound to **your own** GitHub user, so `mcp__github__*` tools read and write as you. This repository is public, so that matters more here than elsewhere: a pull request a session opens, and every comment it leaves, carries your name in front of anyone on the internet. Read what it is about to write before it writes it. Use `mcp__github__*` for **all** GitHub interactions.
 
-Opening a PR from a session follows the shared `CONTRIBUTING.md`: ready-for-review, then self-assigned (§Pull requests) with `assignees` only (§Labels), and stop if `mcp__github__get_me` is not the bot (§Working with Claude Code). Those override the harness default, so read them there rather than assuming a draft is fine.
+**`getbracket-bot` is what you ask, not what you act as.** Adding it to a pull request's reviewers starts the automated reviewer, which posts a review from that account a few minutes later. It holds a credential of its own for that, separate from your connector.
+
+Opening a PR from a session follows the shared `CONTRIBUTING.md`: ready-for-review, then self-assigned (§Pull requests) with `assignees` only (§Labels). Those override the harness default, so read them there rather than assuming a draft is fine.
 
 ### Acting as the GCP identity
 
