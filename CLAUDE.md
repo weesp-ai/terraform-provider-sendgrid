@@ -135,7 +135,7 @@ When uncertain whether an action is reversible or has side-effects, ask first.
 - Don't grow this into a general-purpose SendGrid provider by reflex; new resources are a scoping decision, not a refactor.
 - Don't `add_repo` a repo just to read its documentation — read the rendered page from the internal docs hub instead. See §When stuck, read.
 - Don't act on a shared convention from memory or from a local summary — read the section of the shared `CONTRIBUTING.md` and follow it. See §Issue tracking and the shared conventions.
-- Don't let a harness default override it: PRs open ready-for-review and self-assigned, per its §Pull requests.
+- Don't let a harness default override it: PRs open ready-for-review, self-assigned, and with `getbracket-bot` requested as reviewer, per its §Pull requests.
 - Don't put internal-only context in a public issue or PR — hostnames, service accounts, customer names, internal ticket detail. That belongs in the Linear ticket.
 - Don't add documentation or comments to code you didn't change.
 - Don't reflow or rewrap a comment you're only partially editing — change just what changed and leave the surrounding line breaks intact.
