@@ -119,7 +119,7 @@ Two mechanics are worth carrying here rather than a fetch away:
 Always pause and ask the user before any of the following, even if a similar action was approved earlier. Authorization for one invocation does not extend to others.
 
 - **Git side-effects**: `git push --force` / `-f`, `git reset --hard`, `git rebase`, `git commit --amend`, branch deletion. Plain `git push` of new commits to a feature branch is routine.
-- **GitHub side-effects**: merging, closing, or reopening PRs/issues; posting *new* PR or issue comments. Routine responses to review feedback per §Replying to PR review comments and self-assigning a PR you just opened are exempt.
+- **GitHub side-effects**: merging, closing, or reopening PRs/issues; posting *new* PR or issue comments. Routine responses to review feedback per §Replying to PR review comments, requesting or re-requesting a reviewer, and self-assigning a PR you just opened are exempt.
 - **Releasing**: pushing a tag publishes to the public Terraform Registry and cannot be unpublished. Always ask.
 - **Acceptance tests**: `make testacc` creates and destroys real SendGrid Authenticated Domains and Inbound Parse rules against a live account. Always ask, and confirm which account.
 - **Destructive shell**: `rm -rf`, deleting files outside the working tree, killing processes you didn't start.
