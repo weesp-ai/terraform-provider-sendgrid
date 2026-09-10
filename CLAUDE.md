@@ -35,7 +35,7 @@ A question asks for an answer, not for an explanation of the answer. Add a secon
 
 **This repository is public, and it tracks work in its own GitHub Issues.** That is the exception to the org's Linear-only rule, and the reason is the readers: consumers of the provider can open an issue here, follow it, and see why a release changed — none of which they can do with an internal Linear ticket. Work is *also* tracked internally in **Linear** (workspace `weesp-ai`, team **Engineering**, identifiers `DEV-<n>`), and the Linear ticket links out to the GitHub Issue and the PR so the internal board stays complete.
 
-**The org-wide rules live in the shared `CONTRIBUTING.md` in the internal `weesp-ai/docs`, and this file does not restate them.** Read the relevant section there before you act, and follow it. A summary from memory does not count, and where anything local seems to differ, the shared guide wins. Its §Public repositories is the section written for this repo; §Writing a ticket, §PR title and description, §Linking the ticket, §When the change is too small for a ticket, §Labels, §Replying to review comments and §Working with Claude Code apply in GitHub's vocabulary. How to reach the hub is in §When stuck, read.
+**The org-wide rules live in the shared `CONTRIBUTING.md` in the internal `weesp-ai/docs`, and this file does not restate them**, with one exception: §Replying to PR review comments carries two mechanics in full, because they are the ones sessions get wrong at the moment of acting. Adding a third is a decision, not a habit. Read the relevant section there before you act, and follow it. A summary from memory does not count, and where anything local seems to differ, the shared guide wins. Its §Public repositories is the section written for this repo; §Writing a ticket, §PR title and description, §Linking the ticket, §When the change is too small for a ticket, §Labels, §Replying to review comments through §Re-request the reviewer, and §Working with Claude Code apply in GitHub's vocabulary. How to reach the hub is in §When stuck, read.
 
 What is specific to this repository:
 
@@ -107,14 +107,19 @@ Nothing in this repository touches GCP — the provider talks to SendGrid, and i
 
 ### Replying to PR review comments
 
-The shared `CONTRIBUTING.md` §Replying to review comments is the rule — which reply goes where (an in-thread `Done.`, a one-sentence reason, a 👍 reaction, or a quote-and-permalink comment) and which tool posts each. Read it there; nothing here adds to it.
+The shared `CONTRIBUTING.md` §Replying to review comments is the rule — which reply goes where (an in-thread `Done.`, a one-sentence reason, a 👍 reaction, or a quote-and-permalink comment) and which tool posts each. Read it there.
+
+Two mechanics are worth carrying here rather than a fetch away:
+
+- **One reply at a time.** GitHub's secondary rate limit trips on shape, not volume — several replies fired at this repository at once are refused where the same replies spaced out go through. Post one, let it land, post the next, and back off and retry on a `403` that names a secondary limit. Raw `curl` to `api.github.com` is the last resort only: the egress proxy replaces the `Authorization` header, so a REST write is authored by `claude[bot]` rather than by you — say in chat when you fall back to it. See §One reply at a time.
+- **Re-request the reviewer once you have answered them** — `mcp__github__update_pull_request` with `reviewers: [...]`, after the push and after the replies. A PR whose feedback is addressed but whose reviewer was never asked to look again is stranded: nothing red, nothing blocking, and nobody aware it is their turn. See §Re-request the reviewer.
 
 ## Guardrails — ask before doing
 
 Always pause and ask the user before any of the following, even if a similar action was approved earlier. Authorization for one invocation does not extend to others.
 
 - **Git side-effects**: `git push --force` / `-f`, `git reset --hard`, `git rebase`, `git commit --amend`, branch deletion. Plain `git push` of new commits to a feature branch is routine.
-- **GitHub side-effects**: merging, closing, or reopening PRs/issues; posting *new* PR or issue comments. Routine responses to review feedback per §Replying to PR review comments and self-assigning a PR you just opened are exempt.
+- **GitHub side-effects**: merging, closing, or reopening PRs/issues; posting *new* PR or issue comments. Routine responses to review feedback per §Replying to PR review comments, requesting or re-requesting a reviewer, and self-assigning a PR you just opened are exempt.
 - **Releasing**: pushing a tag publishes to the public Terraform Registry and cannot be unpublished. Always ask.
 - **Acceptance tests**: `make testacc` creates and destroys real SendGrid Authenticated Domains and Inbound Parse rules against a live account. Always ask, and confirm which account.
 - **Destructive shell**: `rm -rf`, deleting files outside the working tree, killing processes you didn't start.
