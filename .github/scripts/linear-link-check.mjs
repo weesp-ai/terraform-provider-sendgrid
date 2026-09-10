@@ -1,9 +1,9 @@
 // Posts the `linear/linked` commit status that gates merging on a pull request
 // being linked to a Linear issue. A copy of the canonical implementation in
-// weesp-ai/.github-private (.github/actions/linear-link/), which every other
-// weesp-ai repository calls instead of vendoring. GitHub does not let a public
-// repository use an action or reusable workflow from a private or internal one,
-// and this repository is public, so it keeps its own copy. Keep the two in step.
+// weesp-ai/tooling (linear-link/), which every other weesp-ai repository calls
+// instead of vendoring. GitHub does not let a public repository use an action or
+// reusable workflow from a private or internal one, and this repository is
+// public, so it keeps its own copy. Keep the two in step.
 //
 // Two sources of truth, in order:
 //
@@ -184,9 +184,16 @@ function describe(names) {
 // something actually changed.
 async function postStatus(pr, result) {
     const target_url = result.target_url || process.env.RUN_URL;
+    // Truncated once, and compared against what GitHub will actually have stored.
+    // Comparing the full description instead would never match a stored one that
+    // had been cut at 140, so the sweep would re-post the same status every half
+    // hour for as long as it stayed that way — the exact burial this dedup exists
+    // to prevent. No description reaches 140 today; this is so that stays true of
+    // whoever writes the next one.
+    const description = result.description.slice(0, 140);
     const existing = (await gh(`/repos/${owner}/${repo}/commits/${pr.head.sha}/statuses?per_page=100`))
         .find(s => s.context === STATUS_CONTEXT);
-    if (existing && existing.state === result.state && existing.description === result.description) {
+    if (existing && existing.state === result.state && existing.description === description) {
         console.log(`  #${pr.number} unchanged: ${result.state} — ${result.description}`);
         return;
     }
@@ -195,7 +202,7 @@ async function postStatus(pr, result) {
         body: JSON.stringify({
             state: result.state,
             context: STATUS_CONTEXT,
-            description: result.description.slice(0, 140),
+            description,
             target_url,
         }),
     });

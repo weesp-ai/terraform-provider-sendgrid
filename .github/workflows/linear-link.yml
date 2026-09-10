@@ -8,10 +8,10 @@ run-name: "${{ github.event_name == 'pull_request' && format('Linear link check 
 # verdict about the author's PR.
 #
 # Every other weesp-ai repository calls the shared implementation in
-# weesp-ai/.github-private instead of carrying this file and its script. GitHub
-# does not let a public repository use an action or reusable workflow from a
-# private or internal one, and this repository is public, so it keeps its own
-# copy. Changes to the shared gate need mirroring here.
+# weesp-ai/tooling instead of carrying this file and its script. GitHub does not
+# let a public repository use an action or reusable workflow from a private or
+# internal one, and this repository is public, so it keeps its own copy. Changes
+# to the shared gate need mirroring here.
 #
 # The `pull_request` types are the four ways a link appears or disappears from
 # the GitHub side (description or title edit, branch push, the waiver label),
