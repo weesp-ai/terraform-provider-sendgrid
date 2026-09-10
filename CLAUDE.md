@@ -99,7 +99,7 @@ git config --global --get gpg.format   # openpgp -> your key is armed; ssh -> it
 
 **`getbracket-bot` is what you ask, not what you act as.** Adding it to a pull request's reviewers starts the automated reviewer, which posts a review from that account a few minutes later. It holds a credential of its own for that, separate from your connector.
 
-Opening a PR from a session follows the shared `CONTRIBUTING.md`: ready-for-review, then self-assigned (§Pull requests) with `assignees` only (§Labels). Those override the harness default, so read them there rather than assuming a draft is fine.
+Opening a PR from a session follows the shared `CONTRIBUTING.md`: ready-for-review, then self-assigned (§Pull requests) with `assignees` only (§Labels). A session-opened pull request also gets **`getbracket-bot` requested as reviewer** — you cannot be your own reviewer, so leaving it off leaves nobody. Those override the harness default, so read them there rather than assuming a draft is fine.
 
 ### Acting as the GCP identity
 
