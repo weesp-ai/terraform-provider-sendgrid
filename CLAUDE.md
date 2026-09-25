@@ -41,9 +41,9 @@ What is specific to this repository:
 
 1. **A GitHub Issue in this repository** states the case for the change, in public, written per §Writing a ticket. It is the artifact an outside reader can find.
 2. **The PR references that issue** — `Fixes #12` (or `Contributes to #12` when the issue takes more than one PR) as a paragraph of its own, last in `## Summary` — and, because outside readers cannot open the ticket, carries enough of the case for the change to stand on its own. It links no internal doc site.
-3. **The Linear ticket cross-links both**, and carries whatever internal context doesn't belong in public. The `linear/linked` check is still required on `main`: attaching the PR from inside Linear satisfies it, as does a bare `DEV-<n>` in the branch name — neither obliges the public PR body to carry an identifier its readers cannot resolve.
+3. **The Linear ticket cross-links both**, and carries whatever internal context doesn't belong in public. Attach the PR from inside Linear rather than naming the ticket in the public PR body, whose readers cannot resolve a `DEV-<n>`. Nothing checks the link: this repository runs no Linear gate.
 4. **PR labels key off the GitHub issue's labels**, not a Linear ticket's.
-5. **No issue for the work you're about to push?** Stop and ask before opening the PR — offer to file one and say what you'd put in it; never invent one silently. Opening a PR with no tracking at all needs the developer's explicit permission, given in that conversation; once given, add the `skip-linear` label so the waiver is recorded on the PR itself.
+5. **No issue for the work you're about to push?** Stop and ask before opening the PR — offer to file one and say what you'd put in it; never invent one silently. Opening a PR with no tracking at all needs the developer's explicit permission, given in that conversation.
 
 ## When stuck, read
 
