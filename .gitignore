@@ -24,3 +24,7 @@ dist/
 *.out
 coverage.txt
 vendor/
+
+# The credentials file the release run's Google Cloud sign-in writes into the
+# checkout; GoReleaser refuses to release from a tree with untracked files.
+gha-creds-*.json
