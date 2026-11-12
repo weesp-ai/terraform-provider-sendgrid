@@ -9,8 +9,11 @@ on:
       - 'v*'
 
 # Creating a GitHub Release and uploading assets counts as writing contents.
+# The run's own token (id-token) is how it signs in to Google Cloud to read the
+# signing key.
 permissions:
   contents: write
+  id-token: write
 
 defaults:
   run:
@@ -36,11 +39,28 @@ jobs:
           go-version-file: go.mod
           cache: true
 
+      # The signing key's private half is kept in Google Secret Manager, and the
+      # run reads it as itself: Google Cloud accepts GitHub's token for a version
+      # tag pushed in this repository, and nothing else.
+      - name: Sign in to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/203210806173/locations/global/workloadIdentityPools/github-releases/providers/terraform-provider-sendgrid
+          # Named, because the run may read the key but not look the project up.
+          project_id: weesp-ai
+
+      - name: Read the signing key
+        uses: google-github-actions/get-secretmanager-secrets@v3
+        id: secrets
+        with:
+          secrets: |-
+            gpg_private_key:weesp-ai/terraform-provider-sendgrid-gpg-key
+
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
         id: import_gpg
         with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg_private_key: ${{ steps.secrets.outputs.gpg_private_key }}
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
